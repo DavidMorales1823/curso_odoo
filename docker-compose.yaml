@@ -1,0 +1,32 @@
+services:
+  web:  # Servicio principal: Odoo 14
+    image: odoo:16  # Imagen oficial de Odoo versión 14
+    depends_on:
+      - db  # Este contenedor depende del contenedor de la base de datos (db)
+    ports:
+      - "8080:8080"  # Expone el puerto 8069 del contenedor al host (tu máquina)  
+    volumes:
+      # Monta la carpeta local "addons" en el contenedor, donde estarán tus módulos personalizados pazra desplegarlo 
+      - ./addons:/mnt/extra-addons
+
+      # Monta el archivo de configuración odoo.conf en el contenedor
+      - ./config/odoo.conf:/etc/odoo/odoo.conf
+    environment:
+      # Variables de entorno (no obligatorias, útiles si haces algo personalizado)
+      - HOST=db           # Nombre del servicio de base de datos
+      - USER=odoo         # Usuario de la base de datos
+      - PASSWORD=odoo     # Contraseña de la base de datos
+
+  db:  # Servicio de base de datos PostgreSQL
+    image: postgres:13  # Imagen oficial de PostgreSQL 13, compatible con Odoo 14
+    environment:
+      - POSTGRES_DB=postgres        # Nombre de la base de datos por defecto
+      - POSTGRES_USER=odoo          # Usuario de la base de datos
+      - POSTGRES_PASSWORD=odoo      # Contraseña del usuario
+    volumes:
+      # Volumen persistente para guardar los datos de PostgreSQL fuera del contenedor
+      - odoo-db-data:/var/lib/postgresql/data
+
+volumes:
+  # Declaración del volumen persistente para PostgreSQL
+  odoo-db-data:

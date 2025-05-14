@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Acción para abrir el menú de libros -->
+        <record id="libros_action" model="ir.actions.act_window">
+            <field name="name">Libros</field>
+            <!-- Cambiado a 'libros' según el modelo Python -->
+            <field name="res_model">libros</field>
+            <field name="view_mode">tree,form,kanban</field>
+        </record>
+
+        <record id="autores_action" model="ir.actions.act_window">
+            <field name="name">Autores</field>
+            <!-- Cambiado a 'libros' según el modelo Python -->
+            <field name="res_model">autor</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menú principal de la librería -->
+        <menuitem name="Mi Libreria" id="libreria_menu"/>
+
+        <!-- Submenú de libros dentro de la librería -->
+        <menuitem name="Libros" id="libros_menu" parent="libreria_menu" action="libros_action"/>
+        <menuitem name="Autores" id="autores_menu" parent="libreria_menu" action="autores_action"/>
+    
+    </data>
+</odoo>
