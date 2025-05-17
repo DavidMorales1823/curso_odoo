@@ -8,19 +8,31 @@
         <field name="model">libros</field>
         <field name="arch" type= "xml">
             <form string="libro">
+                <header>
+                    <!-- genera una barra de estados que cambia entre publicado y borrador
+                    <field name="state" widget="statusbar" options="{'clickable':'1'}"/>-->
+                    <field name="state" widget="statusbar" />
+                    <!-- funcion y boton se debe llamar igual y sera visible mientras el estado sea draft-->
+                    <button name="boton_publicar" string="publicar" type="object" states="draft" class="oe_highlight" />
+                    <button name="boton_borrador" string="borrador" type="object" states="published" />
+                </header>
                 <sheet><!-- hace referencia a una hoja-->
                     <group ><!-- hace referencia a un campo de Bootstrap 12 columnas la primera -->
-                        <group ><!-- 6 columnas-->
-                            <group >
-                                
-                                <field name="image" widget="image" class="oe_avatar"/>
-                            </group>
-                            <group ><!-- 6 columnas-->
-                                <field name="name"/>
-                                <field name="editorial"/>
-                                <field name="isbn"/>
-                                <field name="autor_id"/>
-                            </group>
+                        <group col="1" ><!-- 6 columnas-->                                
+                            <field name="image" widget="image" class="oe_avatar" nolabel="1"/>
+                        </group>
+                        
+                        <group col="2"/>
+
+                        <group col="2" colspan="2" ><!-- 6 columnas--> 
+                            <field name="supervisor_id"/>
+                            <field name="name"/>
+                            <field name="editorial"/>
+                            <field name="isbn"/>
+                            <field name="autor_id"/>
+                            <field name="lastname_autor"/>
+                            <field name="categoria_id"/>
+                            <field name="description"/>
                         </group>
                     </group>
 
@@ -33,18 +45,34 @@
             </form>
         </field>
     </record>
+
+
 <!-- AGREGA UNA VISTA A LA PAGINA PRINCIPAL PRIMERA -->
 <!-- vista arbol  -->
+ <!-- 
+        - decoration-muted: records will be light grey
+        + decration-danger: records will be light red
+        - decoration-success: records will be light green
+        + decoration-primary: records will be light purple
+        - decoration-info: records will be light blue
+        + decoration-warning: records will be light brown
+        - decoration-bf: records will be bold
+        + Decoration-it: records will be italic
+    -->
     <record id="libros_tree_view" model="ir.ui.view">
         <field name="name">libro.tree.view</field>
-        <field name="model">libros</field>
+        <field name="model">libros</field> 
         <field name="arch" type="xml">
-            <tree string= "libros">
+           <!-- <tree string= "libros" decoration-success="state == 'published'" decoration-info="state =='draft'" ->sirve para dale color a las letras de acuerdo si esta publicado o no  --> 
+            <tree string= "libros" decoration-success="state == 'published'" decoration-info="state =='draft'" >
                 <field name="name"/>
-                <field name="editorial"/>
-                <field name="isbn"/>
+                <field name="editorial" optional="show"/> <!-- se usa para ocultar un campo show lo oculta cuando se desea hide en la pre carga-->
+                <field name="isbn" optional="hide"/>
                 <field name="autor_id"/>
-                 
+                <field name="categoria_id"/>
+                <!-- widget badge tiene tres estados info, success, warning-->
+                            <field name="state" widget="badge" decoration-info = "state =='draft'" decoration-success="state =='published'" />
+                
             </tree>
         </field>
 
@@ -67,6 +95,7 @@
                             <div class="o_kanban_image">
                                 <img t-att-src="kanban_image('libros', 'image', record.id.raw_value)" alt="Image"/>
                             </div>
+                            <!-- aqui se hace la configuracion para ponerle el titulo al libro -->
                             <div class="oe_kanban_details" >
                                 <div class="o_kanban_record_top" >
                                     <div class="o_kanban_record_headings">
@@ -82,6 +111,29 @@
             </kanban>
         </field>
     </record>
-    
+
+   <!-- VISTA DE BUSQUEDA--> 
+    <record id="libro_search_view_" model="ir.ui.view">
+        <field name="name">libros.search.view</field>
+        <field name="model">libros</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="nombre del libro"/>
+                <field name="autor_id" string="Nombre del autor"/>
+                <!-- FILTRO RAPIDO domain filtra todos los libro que tengan categoria cientifico, name y string puede ser cualquiera-->
+                <filter name="categoria_cientifico" string="cientifico" domain="[('categoria_id','=','cientifico')]"/> 
+            <!--AGRUPACION RAPIDA -->
+                <group expand="0" string="agrupar por" colspan="12" col="10">
+                    <filter name="categoria" string="categoria"  context="{'group_by': 'categoria_id'}" />
+                </group>
+
+            <!-- SEARCH BAR-->
+                <searchpanel>
+                    <field name="categoria_id" string="categoria" icon="fa-users"/>
+                    <field name="autor_id" string="Autores" />                
+                </searchpanel>
+            </search>
+        </field>
+    </record>
 
 </odoo>
